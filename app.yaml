@@ -1,5 +1,5 @@
 # app.yaml for flex enviroment
-    runtime: python27
+    runtime: python-compat
     env: flex
     threadsafe: true
 
