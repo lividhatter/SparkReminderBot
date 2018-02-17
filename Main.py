@@ -8,6 +8,9 @@ app = Flask(__name__)
 
 messages = [{'from' : 'Cameron', 'message': 'this is the message'}]
 
+@app.route('/')
+def Homepage():
+    return "Hello World!"
 
 @app.route('/sparkbot/messages')
 def get_messages():
