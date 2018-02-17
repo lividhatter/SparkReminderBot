@@ -3,6 +3,7 @@ from flask import Flask, jsonify, request
 import requests
 import time
 
+
 app = Flask(__name__)
 
 messages = [{'from' : 'Cameron', 'message': 'this is the message'}]
