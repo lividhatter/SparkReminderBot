@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, request
 from ciscosparkapi import CiscoSparkAPI
+import time
 
 file = open("key.txt","r")
 key = file.read()
@@ -31,6 +32,12 @@ def send_message():
     # print('\n')
 
     person_id = incoming_data.get("personId")
+    person_dict= botapi.people.get(person_id)
+    print(person_dict)
+    person_nickname = person_dict.nickName
+    print(person_nickname)
+    # TODO Need to dermine if person_id is an admin
+
     if person_id != bot_id:
         room_id = incoming_data.get("roomId")
         message_id = incoming_data.get("id")
@@ -39,11 +46,35 @@ def send_message():
 
         message_dict = botapi.messages.get(message_id)
         message_text = message_dict.text
-        first_nine_characters = message_text[0:9]
-        print(first_nine_characters)
-        if first_nine_characters == bot_name:
-            message_text = message_text[10:]
-            botapi.messages.create(roomId=room_id, text=message_text)
+
+        bot_found = False
+        remindme_found = False
+        reminder_message =""
+        message_split = message_text.split(" ")
+
+
+        if message_split[0].find(bot_name) > -1:
+            bot_found = True
+
+        if message_split[1].find("remindme") > -1:
+            remindme_found = True
+
+        if bot_found and remindme_found:
+
+            if len(message_split) > 3:
+                for split in message_split[3:]:
+                    reminder_message+=(split + " ")
+            else:
+                reminder_message = " Apparently you just wanted me to ping you... weirdo."
+            wait_time = message_split[2]
+            # TODO need to parse wait time for garbage inputs
+            print("Waiting: " + wait_time)
+            botapi.messages.create(roomId=room_id, text="Okay, I'll remind you in " + wait_time + " seconds, " + person_nickname)
+            time.sleep(int(wait_time))
+            botapi.messages.create(roomId=room_id, text="Reminding you: " + reminder_message)
+
+        # Todo Determine which command was issued
+
 
     return '', 204
 
