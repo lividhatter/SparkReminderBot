@@ -10,7 +10,7 @@ file = open("key.txt","r")
 key = file.read()
 
 
-botapi = CiscoSparkAPI(access_token="YTVjNTRiNjgtMGViOS00YmQyLWJiNTgtZThmMDNiYWI2Yzk3MDE3MDFmZGUtMmNj")
+botapi = CiscoSparkAPI(access_token=key)
 
 
 
