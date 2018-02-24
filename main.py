@@ -185,4 +185,5 @@ if __name__ == '__main__':
     database_watcher = threading.Thread(target=check_reminders, args=(sleep_time, ))
     database_watcher.start()
     # app.run(debug=True, use_reloader=False)
+
     app.run()
