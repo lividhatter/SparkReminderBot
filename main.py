@@ -147,7 +147,7 @@ def Homepage():
 def get_messages():
     db = load_reminder_db()
     string = str(db[0])
-    return string
+    return 'string'
 
 @app.route('/sparkbot/messages', methods=['POST'])
 def receive_message():
