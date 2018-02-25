@@ -72,6 +72,7 @@ def determine_datetime(reminder_time_raw):
 
     # If time ends in am, pm, a or p  the following 2 ifs catch it'
     if reminder_time_raw[-2:] == 'am' or reminder_time_raw[-2:] == 'pm':
+        print('am or pm')
         am_pm = reminder_time_raw[-2:]
         raw_time = reminder_time_raw[:-2]
         if len(raw_time) == 4:
@@ -87,9 +88,11 @@ def determine_datetime(reminder_time_raw):
             print(hours_var)
             if hours_var <= 11:
                 hours_var += 12
-            output = datetime.datetime.now().replace(hour=hours_var, minute=minutes_var)
+
+        output = datetime.datetime.now().replace(hour=hours_var, minute=minutes_var)
 
     if reminder_time_raw[-1:] == 'a' or reminder_time_raw[-1:] == 'p':
+        print('a or p')
         am_pm = reminder_time_raw[-1:]
         raw_time = reminder_time_raw[:-1]
         if len(raw_time) == 4:
@@ -104,7 +107,8 @@ def determine_datetime(reminder_time_raw):
         if am_pm == 'p':
             if hours_var <= 11:
                 hours_var += 12
-            output = datetime.datetime.now().replace(hour=hours_var, minute=minutes_var)
+
+        output = datetime.datetime.now().replace(hour=hours_var, minute=minutes_var)
 
     # if time ends in h, m (but is not am or pm) , or d. this will catch it
     if output == 0:
@@ -149,6 +153,7 @@ def get_messages():
 def receive_message():
     incoming_webhook=request.get_json()
     incoming_data = incoming_webhook.get("data")
+    # print(incoming_data)
     person_id = incoming_data.get("personId")
     person_dict= botapi.people.get(person_id)
     person_nickname = person_dict.nickName
