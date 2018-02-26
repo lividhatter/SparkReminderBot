@@ -14,10 +14,10 @@ resources:
   cpu:
   memory_gb: 0.5
   disk_size_gb: 10
-
-handlers:
-- url: /.*
-  script: main.app
+#
+#handlers:
+#- url: /.*
+#  script: main.app
 
 #
 #
