@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from flask import Flask, jsonify, request
 from ciscosparkapi import CiscoSparkAPI
 import datetime
@@ -6,11 +8,14 @@ import pickle
 import time
 import os
 
-file = open("key.txt","r")
+file = open("./key.txt","r")
 key = file.read()
+
 botapi = CiscoSparkAPI(access_token=key)
-bot_id = 'Y2lzY29zcGFyazovL3VzL1BFT1BMRS80YTkzZDUyZC02NmU3LTRmMjYtOTljNC1iM2U1OThkZjU2M2M'
-bot_name = 'LividTest'
+# bot_id = 'Y2lzY29zcGFyazovL3VzL1BFT1BMRS80YTkzZDUyZC02NmU3LTRmMjYtOTljNC1iM2U1OThkZjU2M2M'
+bot_id = 'Y2lzY29zcGFyazovL3VzL0FQUExJQ0FUSU9OL2I4NGE2NWQxLWFhZDktNDIyMC05ODFmLWYwYzNmMGEzZTIwOQ'
+
+bot_name = 'EggTimer'
 
 app = Flask(__name__)
 
@@ -151,12 +156,16 @@ def get_messages():
 def receive_message():
     incoming_webhook=request.get_json()
     incoming_data = incoming_webhook.get("data")
-    # print(incoming_data)
+    
+    print(incoming_data)
     person_id = incoming_data.get("personId")
     person_dict= botapi.people.get(person_id)
     person_nickname = person_dict.nickName
 
+    print('checking who sent message')
     if person_id != bot_id:
+        print('personID was not botID')
+
         room_id = incoming_data.get("roomId")
         message_id = incoming_data.get("id")
         message_dict = botapi.messages.get(message_id)
@@ -166,6 +175,7 @@ def receive_message():
         message_split = message_text.split(" ")
 
         if message_split[0].find(bot_name) > -1:
+            print('bot name found')
             bot_found = True
 
         if message_split[1].find("remindme") > -1:
@@ -178,7 +188,7 @@ def receive_message():
                 message = ' '.join(message_split[3:])
             else:
                 message = ''
-
+            print('Attempting to send confirmation')
             send_confirmation(room_id, reminder_time_string, reminder_date_string, person_id, person_nickname)
             save_reminder(reminder_time, room_id, message, person_id, person_nickname)
 
@@ -190,4 +200,4 @@ if __name__ == '__main__':
     database_watcher.start()
     # app.run(debug=True, use_reloader=False)
 
-    app.run()
+    app.run('0.0.0.0')
