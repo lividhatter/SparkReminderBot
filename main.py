@@ -12,7 +12,6 @@ file = open("./key.txt","r")
 key = file.read()
 
 botapi = CiscoSparkAPI(access_token=key)
-# bot_id = 'Y2lzY29zcGFyazovL3VzL1BFT1BMRS80YTkzZDUyZC02NmU3LTRmMjYtOTljNC1iM2U1OThkZjU2M2M'
 bot_id = 'Y2lzY29zcGFyazovL3VzL0FQUExJQ0FUSU9OL2I4NGE2NWQxLWFhZDktNDIyMC05ODFmLWYwYzNmMGEzZTIwOQ'
 
 bot_name = 'EggTimer'
