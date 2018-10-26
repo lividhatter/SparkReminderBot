@@ -184,9 +184,8 @@ def receive_message():
 
         if bot_found: # and remindme_found:
             #  ToDo should accept time and date
-            print(message_split[2])
             reminder_time, reminder_time_string, reminder_date_string = determine_datetime(message_split[1])
-            if len(message_split) > 3:
+            if len(message_split) > 2:
                 message = ' '.join(message_split[2:])
             else:
                 message = ''
