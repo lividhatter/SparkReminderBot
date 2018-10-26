@@ -8,7 +8,6 @@ import pickle
 import time
 import os
 
-# test 2
 file = open("./key.txt","r")
 key = file.read()
 
