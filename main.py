@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# test
 
 from flask import Flask, jsonify, request
 from ciscosparkapi import CiscoSparkAPI
@@ -9,6 +8,7 @@ import pickle
 import time
 import os
 
+# test 2
 file = open("./key.txt","r")
 key = file.read()
 
