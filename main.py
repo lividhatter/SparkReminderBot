@@ -162,9 +162,9 @@ def receive_message():
     person_dict= botapi.people.get(person_id)
     person_nickname = person_dict.nickName
 
-    print('checking who sent message')
+    # print('checking who sent message')
     if person_id != bot_id:
-        print('personID was not botID')
+        # print('personID was not botID')
 
         room_id = incoming_data.get("roomId")
         message_id = incoming_data.get("id")
@@ -175,7 +175,7 @@ def receive_message():
         message_split = message_text.split(" ")
 
         if message_split[0].find(bot_name) > -1:
-            print('bot name found')
+            # print('bot name found')
             bot_found = True
 
         # commented out the remind me requirements
@@ -184,6 +184,7 @@ def receive_message():
 
         if bot_found: # and remindme_found:
             #  ToDo should accept time and date
+            print(message_split[2])
             reminder_time, reminder_time_string, reminder_date_string = determine_datetime(message_split[2])
             if len(message_split) > 3:
                 message = ' '.join(message_split[2:])
