@@ -170,17 +170,18 @@ def receive_message():
         message_dict = botapi.messages.get(message_id)
         message_text = message_dict.text
         bot_found = False
-        remindme_found = False
+        # remindme_found = False
         message_split = message_text.split(" ")
 
         if message_split[0].find(bot_name) > -1:
             print('bot name found')
             bot_found = True
 
-        if message_split[1].find("remindme") > -1:
-            remindme_found = True
+        # commented out the remind me requirements
+        # if message_split[1].find("remindme") > -1:
+            # remindme_found = True
 
-        if bot_found and remindme_found:
+        if bot_found: # and remindme_found:
             #  ToDo should accept time and date
             reminder_time, reminder_time_string, reminder_date_string = determine_datetime(message_split[2])
             if len(message_split) > 3:
