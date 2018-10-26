@@ -129,7 +129,8 @@ def determine_datetime(reminder_time_raw):
         elif modifier == 'h':
             hours_var = int(raw_time)
             output = datetime.datetime.now() + datetime.timedelta(hours=hours_var, minutes=minutes_var, days=days_var)
-
+    print(now)
+    print(output)
     if now > output:
         output = output + datetime.timedelta(days=1)
     output_string = output.strftime('%m/%d/%Y at %I:%M%p')
