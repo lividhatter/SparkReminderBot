@@ -186,7 +186,7 @@ def receive_message():
             #  ToDo should accept time and date
             reminder_time, reminder_time_string, reminder_date_string = determine_datetime(message_split[2])
             if len(message_split) > 3:
-                message = ' '.join(message_split[3:])
+                message = ' '.join(message_split[2:])
             else:
                 message = ''
             print('Attempting to send confirmation')
