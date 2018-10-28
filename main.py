@@ -7,6 +7,7 @@ import threading
 import pickle
 import time
 import os
+from dateutil.parser import *
 
 file = open("./key.txt","r")
 key = file.read()
@@ -66,55 +67,42 @@ def check_reminders(sleep_time):
         print('Sleeping {}'.format(sleep_time))
         time.sleep(sleep_time)
 
-def determine_datetime(reminder_time_raw):
+def determine_datetime(message_text):
     # ToDo needs to convert the user input into an actual date and time. send and error response if its not legit
-    minutes_var = 0
-    hours_var = 0
-    days_var = 0
-    now = datetime.datetime.now()
-    output = 0
+    am_pm_values =['am', 'Am', 'AM','pm','PM','Pm']
+    hour_minute_day_values = ['D','d','day','days','Day','Days',
+                            'M','m','min','mins','Min','Mins',
+                            'H','h','hour','hours','Hour','Hours']
+    for _ in message_text:
+        found_am_pm = False
+        found_hour_min_day = False
+        print('-'*5)
+        print(_)
+        message_split = _.split(' ')
+        first_part_of_message = message_split[0]
+        
+        for item in hour_minute_day_values:
+            if item in first_part_of_message:
+                found_hour_min_day = True
+                print(item, first_part_of_message)
+                # TODO: need to add the hours mins and days to now
+        
+        # for item in am_pm_values:
+        #     if item in first_part_of_message:
+        #         found_am_pm = True
+                
+        # if found_am_pm == False:
+               
+        if found_hour_min_day == False:
+            try:
+                found = parse(_, fuzzy=True)
+                print found
+            except:
+                print('No date or time found')
 
-    # If time ends in am, pm, a or p  the following 2 ifs catch it'
-    if reminder_time_raw[-2:] == 'am' or reminder_time_raw[-2:] == 'pm':
-        print('am or pm')
-        am_pm = reminder_time_raw[-2:]
-        raw_time = reminder_time_raw[:-2]
-        if len(raw_time) == 4:
-            hours_var = int(raw_time[:2])
-            minutes_var = int(raw_time[2:4])
-        elif len(raw_time) == 3:
-            hours_var = int(raw_time[:1])
-            minutes_var = int(raw_time[1:3])
-        elif len(raw_time) <= 2:
-            hours_var = int(raw_time)
+            
 
-        if am_pm == 'pm':
-            print(hours_var)
-            if hours_var <= 11:
-                hours_var += 12
 
-        output = datetime.datetime.now().replace(hour=hours_var, minute=minutes_var)
-
-    if reminder_time_raw[-1:] == 'a' or reminder_time_raw[-1:] == 'p':
-        print('a or p')
-        am_pm = reminder_time_raw[-1:]
-        raw_time = reminder_time_raw[:-1]
-        if len(raw_time) == 4:
-            hours_var = int(raw_time[:2])
-            minutes_var = int(raw_time[2:4])
-        elif len(raw_time) == 3:
-            hours_var = int(raw_time[:1])
-            minutes_var = int(raw_time[1:3])
-        elif len(raw_time) <= 2:
-            hours_var = int(raw_time)
-
-        if am_pm == 'p':
-            if hours_var <= 11:
-                hours_var += 12
-
-        output = datetime.datetime.now().replace(hour=hours_var, minute=minutes_var)
-
-    # if time ends in h, m (but is not am or pm) , or d. this will catch it
     if output == 0:
         modifier = reminder_time_raw[-1:]
         raw_time = reminder_time_raw[:-1]
@@ -129,6 +117,11 @@ def determine_datetime(reminder_time_raw):
         elif modifier == 'h':
             hours_var = int(raw_time)
             output = datetime.datetime.now() + datetime.timedelta(hours=hours_var, minutes=minutes_var, days=days_var)
+    
+    
+    
+
+    
     print('Now: ', now)
     print('Output: ', output)
     if now > output:
@@ -157,7 +150,7 @@ def receive_message():
     incoming_webhook=request.get_json()
     incoming_data = incoming_webhook.get("data")
     
-    print(incoming_data)
+    # print(incoming_data)
     person_id = incoming_data.get("personId")
     person_dict= botapi.people.get(person_id)
     person_nickname = person_dict.nickName
@@ -167,9 +160,13 @@ def receive_message():
         # print('personID was not botID')
 
         room_id = incoming_data.get("roomId")
+        print('Room ID: ',room_id)
         message_id = incoming_data.get("id")
+        print('Message ID: ',message_id)
         message_dict = botapi.messages.get(message_id)
+        print('Message Dict: ',message_dict)
         message_text = message_dict.text
+        print('Message Dict Text: ', message_text)
         bot_found = False
         # remindme_found = False
         message_split = message_text.split(" ")
@@ -184,7 +181,9 @@ def receive_message():
 
         if bot_found: # and remindme_found:
             #  ToDo should accept time and date
-            reminder_time, reminder_time_string, reminder_date_string = determine_datetime(message_split[1])
+            reminder_datetime, reminder_time_string = determine_datetime(message_text)
+            
+            # TODO: This code needs to be looked at after the datetime is properly returned
             if len(message_split) > 2:
                 message = ' '.join(message_split[2:])
             else:
