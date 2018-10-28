@@ -136,7 +136,6 @@ def determine_datetime(reminder_time_raw):
     output_string = output.strftime('%m/%d/%Y at %I:%M%p')
     output_time_string = output.strftime('%m/%d/%Y')
     output_date_string = output.strftime('%I:%M%p')
-    # should have output_time_string and output_date_string as variables
 
     return output, output_time_string, output_date_string
 
@@ -189,6 +188,7 @@ def receive_message():
                 message = ' '.join(message_split[2:])
             else:
                 message = ''
+            print('Message: ', message)
             print('Attempting to send confirmation')
             send_confirmation(room_id, reminder_time_string, reminder_date_string, person_id, person_nickname)
             save_reminder(reminder_time, room_id, message, person_id, person_nickname)
