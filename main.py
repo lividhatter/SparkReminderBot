@@ -166,9 +166,13 @@ def receive_message():
         # print('personID was not botID')
 
         room_id = incoming_data.get("roomId")
+        print('Room ID: ', room_id)
         message_id = incoming_data.get("id")
+        print('Message ID: ', message_id)
         message_dict = botapi.messages.get(message_id)
+        print('Message Dict: ', message_dict)
         message_text = message_dict.text
+        print('Message Text:', message_text)
         bot_found = False
         # remindme_found = False
         message_split = message_text.split(" ")
