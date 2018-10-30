@@ -64,7 +64,7 @@ def check_reminders(sleep_time):
                 new_db.append(reminder)
 
         save_reminder_db(new_db)
-        print('Sleeping {}'.format(sleep_time))
+        # print('Sleeping {}'.format(sleep_time))
         time.sleep(sleep_time)
 
 def determine_datetime(message_text):
@@ -73,7 +73,9 @@ def determine_datetime(message_text):
     hour_minute_day_values = ['D','d','day','days','Day','Days',
                             'M','m','min','mins','Min','Mins',
                             'H','h','hour','hours','Hour','Hours']
-    for _ in message_text:
+    print(message_text)
+    
+    for _ in am_pm_values:
         found_am_pm = False
         found_hour_min_day = False
         print('-'*5)
@@ -96,7 +98,7 @@ def determine_datetime(message_text):
         if found_hour_min_day == False:
             try:
                 found = parse(_, fuzzy=True)
-                print found
+                print(found)
             except:
                 print('No date or time found')
 
@@ -132,10 +134,34 @@ def determine_datetime(message_text):
     # should have output_time_string and output_date_string as variables
 
     return output, output_time_string, output_date_string
+def get_test_response_dict():
+    # test_message_text = ['10/20/2018 date only reminder',
+    #         '10:00am time only no space',
+    #         '12:00 pm time only with space',
+    #         '10/11/2018 10:00am date and time',
+    #         '10h no time or date 10 hours',
+    #         '15m no time or date just minutes',
+    #         '3d no time or date just days']
+    
+    test_dict = {"id": "test_message_id",
+                "roomId": "Y2lzY29zcGFyazovL3VzL1JPT00vNmMzMmE1MjAtZWMxYi0xMWU3LWIyMDEtNGZkZjM2MzM0N2Ix",
+                "roomType": "group",
+                "text": "EggTimer 5m this is the test message",
+                "personId": "fake_person_id",
+                "personEmail": "fake.email@nowhere.nope",
+                "html": "<p><spark-mention data-object-type=\"person\" data-object-id=\"Y2lzY29zcGFyazovL3VzL1BFT1BMRS9iODRhNjVkMS1hYWQ5LTQyMjAtOTgxZi1mMGMzZjBhM2UyMDk\">EggTimer</spark-mention> 5m test te3</p>",
+                "mentionedPeople": ["Y2lzY29zcGFyazovL3VzL1BFT1BMRS9iODRhNjVkMS1hYWQ5LTQyMjAtOTgxZi1mMGMzZjBhM2UyMDk"],
+                "created": "2018-10-28T17:35:53.507Z"}
 
-def send_confirmation(roomId, reminder_time_string, reminder_date_string, person_id, person_nickname):
-    message = 'Okay, I\'ll remind you on {} at {} <@personId:{}|{}>!'.format(reminder_time_string, reminder_date_string, person_id, person_nickname)
-    botapi.messages.create(roomId=roomId, markdown=message)
+    print(test_dict.get('text'))
+    return test_dict
+
+def send_confirmation(roomId, reminder_time_string, reminder_date_string, person_id, person_nickname,mode):
+    if mode == True:
+        print('Not sending confirmation.')
+    else:
+        message = 'Okay, I\'ll remind you on {} at {} <@personId:{}|{}>!'.format(reminder_time_string, reminder_date_string, person_id, person_nickname)
+        botapi.messages.create(roomId=roomId, markdown=message)
 
 @app.route('/')
 def Homepage():
@@ -149,8 +175,9 @@ def get_messages():
 def receive_message():
     incoming_webhook=request.get_json()
     incoming_data = incoming_webhook.get("data")
-    
-    # print(incoming_data)
+    print('Incoming Data: ', '-'*10)
+    print(incoming_data)
+    print('-'*10)
     person_id = incoming_data.get("personId")
     person_dict= botapi.people.get(person_id)
     person_nickname = person_dict.nickName
@@ -158,15 +185,26 @@ def receive_message():
     # print('checking who sent message')
     if person_id != bot_id:
         # print('personID was not botID')
-
         room_id = incoming_data.get("roomId")
-        print('Room ID: ',room_id)
         message_id = incoming_data.get("id")
+        # print('message ID: ', message_id)
+        if message_id == 'test_message_id':
+            print('calling function')
+            message_dict = get_test_response_dict()
+            test_mode = True
+            message_text = message_dict.get('text')
+        else:
+            message_dict = botapi.messages.get(message_id)
+            test_mode = False
+            message_text = message_dict.text
+        
+        
+        
+        print('Room ID: ',room_id)
         print('Message ID: ',message_id)
-        message_dict = botapi.messages.get(message_id)
         print('Message Dict: ',message_dict)
-        message_text = message_dict.text
-        print('Message Dict Text: ', message_text)
+        print('Message Text: ', message_text)
+        
         bot_found = False
         # remindme_found = False
         message_split = message_text.split(" ")
@@ -189,8 +227,8 @@ def receive_message():
             else:
                 message = ''
             print('Attempting to send confirmation')
-            send_confirmation(room_id, reminder_time_string, reminder_date_string, person_id, person_nickname)
-            save_reminder(reminder_time, room_id, message, person_id, person_nickname)
+            send_confirmation(room_id, reminder_time_string, reminder_date_string, person_id, person_nickname,test_mode)
+            save_reminder(reminder_time, room_id, message, person_id, person_nickname,test_mode)
 
     return '', 204
 
@@ -198,6 +236,7 @@ if __name__ == '__main__':
     sleep_time = 15
     database_watcher = threading.Thread(target=check_reminders, args=(sleep_time, ))
     database_watcher.start()
-    # app.run(debug=True, use_reloader=False)
+    # app.run(debug=True, use_reloader=True)
 
     app.run('0.0.0.0')
+
